@@ -105,20 +105,54 @@ print(result2)
 
 
 
-# ---task 5-3 ---
-# Step 1: Load the CO2 dataset (included in R by default)
-data(CO2)
+# ---task6-2---
+# ---- Function: mean excluding min & max ----
+mean_excl_minmax <- function(x, remove = c("all", "one"), na.rm = TRUE) {
+  stopifnot(is.numeric(x))               # Ensure input is numeric
+  remove <- match.arg(remove)            # Match argument ("all" or "one")
+  if (na.rm) x <- x[!is.na(x)]           # Remove NA values if specified
+  n <- length(x)
+  if (n < 3) return(NA_real_)            # Not enough values to compute
+  if (remove == "all") {
+    r <- range(x)
+    x2 <- x[x > r[1] & x < r[2]]         # Remove all values equal to min or max
+  } else {
+    x_ord <- sort(x)
+    x2 <- x_ord[2:(n - 1)]               # Remove only one min and one max
+  }
+  if (length(x2) == 0) return(NA_real_)  # If no values left (e.g., all equal)
+  mean(x2)                               # Compute mean of remaining values
+}
 
-# Step 2: Load the dplyr package for data manipulation
+#comment
+#The mean computed after excluding the minimum and maximum is a more robust summary than the ordinary mean because it reduces the influence of outliers.
+#If results from remove = "one" and "all" are similar, only a few extremes are present; a large gap indicates multiple extremes or strong skewness.
+#Reporting ordinary mean, min/max-excluded mean, and median side by side demonstrates that your conclusions do not hinge on outliers.
+
+
+# ---task6-3---
+#Why we didn’t use pipes here
+#Few steps; explicit intermediates make intent clearer
+#We wanted to debug step-by-step (inspect outputs)
+#Some tasks stand alone as single functions; little benefit from chaining
+
+# Example: summarize CO2 by Type × Treatment
 library(dplyr)
+CO2 |>
+  group_by(Type, Treatment) |>
+  summarise(uptake_mean = mean(uptake), .groups = "drop")
+# Equivalent (non-pipe)
+tmp <- group_by(CO2, Type, Treatment)
+summarise(tmp, uptake_mean = mean(uptake), .groups = "drop")
 
-# Step 3: Group the data by plant Type and calculate summary statistics
-CO2 %>%
-  group_by(Type) %>%
-  summarise(
-    mean_uptake = mean(uptake),
-    median_uptake = median(uptake)
-  )
+#When to use them
+#For 3–5 sequential transforms to improve readability
+#When no intermediate objects are needed
+#To express data → transform → plot in one flow
+
+
+# ---task6-4---
+#I primarily use single-cell analysis in my research, so I consider lapply the most useful for my work. lapply excels at applying the same procedure to each sample, making it well suited for analyzing large numbers of samples.
 
 
 # --- task7-1-a ---
@@ -459,3 +493,146 @@ kable(
 #Where the max >> median, a few chromosomes show markedly high counts, indicating right-skewed distributions.
 #Because the median is robust to outliers, it is a more stable summary for between-chromosome comparison.
 #Use boxplots and/or log scales to visualize spread and outliers, and flag chromosomes driving the maxima.
+
+
+
+# ---task8-1-b---
+# Packages
+library(tidybiology)  # for the 'chromosome' dataset
+library(ggplot2)
+library(patchwork)
+
+# Load data (if not already loaded)
+data("chromosome")
+
+# ---- Histogram ----
+p1 <- ggplot(chromosome, aes(x = basepairs)) +
+  geom_histogram(binwidth = 5e7, fill = "skyblue", color = "black", alpha = 0.7) +
+  labs(
+    title = "Chromosome Sizes (Histogram)",
+    x = "Chromosome Size (basepairs)",
+    y = "Count"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(size = 10, hjust = 0.5),  # smaller, centered title
+    axis.text  = element_text(size = 8),                # smaller tick labels
+    axis.title = element_text(size = 9),                # smaller axis titles
+    axis.text.x = element_text(angle = 45, hjust = 1)   # rotate x labels
+  )
+# ---- Density plot ----
+p2 <- ggplot(chromosome, aes(x = basepairs)) +
+  geom_density(fill = "orange", alpha = 0.5) +
+  labs(
+    title = "Chromosome Sizes (Density)",
+    x = "Chromosome Size (basepairs)",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(size = 10, hjust = 0.5),
+    axis.text  = element_text(size = 8),
+    axis.title = element_text(size = 9),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+# ---- Display side by side ----
+p1 + p2
+
+#comment
+#Chromosome sizes span a wide range, with a long right tail indicating a few very large chromosomes.
+#The density curve highlights the typical scale (around the main peak) and reveals larger-than-usual chromosomes beyond it.
+#Identify and annotate the smallest/largest chromosomes to evaluate whether extremes reflect technical artifacts or biological signals.
+
+
+# ---task8-c---
+# Packages
+library(tidybiology)  # for the 'chromosome' dataset
+library(ggplot2)
+library(patchwork)
+
+# Load data
+data("chromosome")
+
+# Scatter plot: Chromosome length vs Protein-coding genes
+p1 <- ggplot(chromosome, aes(x = basepairs, y = protein_codinggenes)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "darkblue", linetype = "dashed") +
+  labs(
+    title = "Chromosome Length vs Protein-Coding Genes",
+    x = "Chromosome Length (basepairs)",
+    y = "Number of Protein-Coding Genes"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 8, hjust = 0.5),
+    axis.text   = element_text(size = 8),
+    axis.title  = element_text(size = 9),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+# Scatter plot: Chromosome length vs miRNAs
+p2 <- ggplot(chromosome, aes(x = basepairs, y = mi_rna)) +
+  geom_point(color = "tomato", size = 2, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "darkred", linetype = "dashed") +
+  labs(
+    title = "Chromosome Length vs miRNAs",
+    x = "Chromosome Length (basepairs)",
+    y = "Number of miRNAs"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 8, hjust = 0.5),
+    axis.text   = element_text(size = 8),
+    axis.title  = element_text(size = 9),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+# Display side by side
+p1 + p2
+
+#comment
+#Longer chromosomes tend to have more protein-coding genes (positive regression slope).
+#miRNA counts also show a positive trend, but with greater scatter, suggesting a weaker association than for genes.
+#Because totals scale with length, comparisons should use length-normalized densities (per Mb) for genes and miRNAs.
+
+
+# ---task8-1-d---
+# Packages
+library(tidyverse)
+# If your dataset comes from tidybiology, uncomment the next two lines:
+# library(tidybiology)
+# data("proteins")
+
+# --- 1. Calculate summary statistics ---
+protein_summary <- proteins %>%
+  summarise(
+    across(
+      .cols = c(length, mass),
+      .fns = list(
+        mean   = ~ mean(.x, na.rm = TRUE),
+        median = ~ median(.x, na.rm = TRUE),
+        max    = ~ max(.x, na.rm = TRUE)
+      ),
+      .names = "{.col}_{.fn}"
+    )
+  )
+# Display the summary
+print(protein_summary)
+# --- 2. Scatter plot with dashed regression line (and CI) ---
+ggplot(proteins, aes(x = length, y = mass)) +
+  geom_point(color = "steelblue", alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, color = "darkred", linetype = "dashed") +
+  labs(
+    title = "Relationship between Protein Length and Mass",
+    x = "Protein Length",
+    y = "Protein Mass"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(size = 10, hjust = 0.5),
+    axis.text  = element_text(size = 10),
+    axis.title = element_text(size = 10)
+  )
+
+#comment
+#Noticeable spread at a given length suggests effects of amino-acid composition, post-translational modifications, or annotation/measurement noise.
+#Outliers are candidates for complexes, heavy modifications, or annotation issues and warrant follow-up.
