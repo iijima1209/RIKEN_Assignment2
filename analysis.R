@@ -7,22 +7,39 @@ sqrt_result <- sqrt(number)
 print(sqrt_result)
 #[1] 3.162278
 
+#comment
+# The square root of the number 10 is approximately 3.162.
+# In R, the sqrt() function allows us to calculate square roots easily.
+# R provides a reliable and quick way to perform mathematical calculations.
+# This result confirms the mathematical fact that √10 ≈ 3.162.
 
-# ---2を底とする32の対数を求めるRのコマンド ---
+
+# ---R command to calculate the base-2 logarithm of 32 ---
 # Step 1: Calculate the base-2 logarithm of 32
 log_result <- log(32, base = 2)
 # Step 2: Print the result
 print(log_result)
 #[1] 5
 
+#comment
+# The base-2 logarithm of 32 is 5.
+# This confirms the exponential relationship that 2^5 = 32.
+# Using the log() function in R, we can easily compute logarithms with any base.
+# The result demonstrates the correctness of the logarithmic-exponential relationship.
 
-# Create a sequence from 1 to 1000
+
+# ---Create a sequence from 1 to 1000---
 numbers <- 1:1000
 # Step 1: Calculate the sum
 total_sum <- sum(numbers)
 # Step 2: Display the result
 total_sum
 #[1] 500500
+
+#comment
+# From this output, we learn that the sum of the integers from 1 to 1000 is 500,500.
+# This matches the mathematical formula for the sum of the first n natural numbers:
+# Sum = n(n + 1) / 2
 
 
 # Create a sequence of even numbers from 2 to 1000
@@ -35,6 +52,12 @@ sum_even <- sum(even_numbers)
 sum_even
 #[1] 250500
 
+#comment
+# From this output, we learn that the sum of all even numbers from 2 to 1000 is 250,500.
+# Sum = n/2 * (first_term + last_term)
+# So, Sum = 500/2 * (2 + 1000) = 250 * 1002 = 250,500.
+# Therefore, the R calculation confirms the arithmetic sequence formula.
+
 
 # --- Calculate the numbur of pairwise comparisons for 100 genes ---
 # Step 1: Define the number of genes
@@ -44,6 +67,13 @@ pairwise_comparisons <- choose(num_genes, 2)
 # Step 3: Display the result
 print(pairwise_comparisons)
 #[1] 4950
+
+#comment
+# From this output, we learn that the number of pairwise comparisons among 100 genes is 4,950.
+# This result comes from the combinatorial formula "n choose 2":
+# C(n, 2) = n * (n - 1) / 2
+# C(100, 2) = 100 * 99 / 2 = 4,950
+# Therefore, the R calculation confirms how combinatorics can be used to determine the number of unique pairs in a dataset.
 
 
 # --- How many ways are there to choose 3 genes at a time from 100 genes ---
@@ -55,10 +85,30 @@ triplet_combinations <- choose(num_genes, 3)
 print(triplet_combinations)
 #[1] 161700
 
+#comment
+# From this output, we learn that the number of ways to choose 3 genes 
+# at a time from 100 genes is 161,700.
+# This result comes from the combinatorial formula "n choose k":
+#     C(n, k) = n! / (k! * (n - k)!)
+# Substituting n = 100 and k = 3 gives:
+# C(100, 3) = 100 * 99 * 98 / (3 * 2 * 1) = 161,700
+# Therefore, the R calculation confirms that combinatorics can be used to determine the number of unique triplets in a dataset.
+
 
 # ---task 5-2 ---
 help("CO2")
 #CO2 is a dataset containing the results of an experiment on the carbon dioxide uptake of grass plants under different treatment conditions and CO2 concentrations. It has 84 observations on 5 variables: Plant, Type, Treatment, conc, and uptake.
+
+#comment
+# From the output of help("CO2"), we learn that the CO2 dataset is a built-in dataset in R, containing information on the effect of different CO2 
+# concentrations on the growth of grass plants.
+# The dataset is structured as a data frame with variables such as:
+# - Plant
+# - Type
+# - Treatment
+# - conc
+# - uptake
+
 
 # --- task 5-3 ---
 # Step 1: Load the CO2 dataset (included in R by default)
@@ -77,6 +127,11 @@ CO2 %>%
 #<fct>                <dbl>         <dbl>
 #1 Quebec             33.5          37.2
 #2 Mississippi        20.9          19.3
+
+# comment
+# Quebec plants show a higher mean uptake (33.5) and median uptake (37.2).
+# Mississippi plants show a lower mean uptake (20.9) and median uptake (19.3).
+# The conclusion is that plant type plays a crucial role in CO2 uptake efficiency.
 
 
 # ---task 6-1 ---
@@ -103,6 +158,13 @@ print(result2)
 #  mean   median     ratio
 #2 20.9    19.3     1.082902
 
+#comment
+# From the results, we learn the relationship between the mean and median 
+# values for the two plant types:
+# - For Quebec plants (mean = 33.5, median = 37.2), the ratio is less than 1 (0.90).
+#   This indicates that the distribution is slightly left-skewed, with the median being higher than the mean.
+# - For Mississippi plants (mean = 20.9, median = 19.3), the ratio is greater than 1 (1.08).
+#   This suggests a right-skewed distribution, with the mean being higher than the median.
 
 
 # ---task6-2---
@@ -145,6 +207,7 @@ CO2 |>
 tmp <- group_by(CO2, Type, Treatment)
 summarise(tmp, uptake_mean = mean(uptake), .groups = "drop")
 
+#comment
 #When to use them
 #For 3–5 sequential transforms to improve readability
 #When no intermediate objects are needed
@@ -202,6 +265,10 @@ ggplot(magic_long, aes(x = Value, fill = Variable)) +
     axis.title.y = element_text(size = 12)                 # Adjust y-axis label size
   )
 
+#comment
+#From these histograms, we learn how the distributions of "length" and "weight" in the dataset differ in their spread and central tendency.
+#Using base R histograms is simple and effective for quick inspection, while ggplot2 provides more flexibility, customization, and publication-ready graphics.
+
 
 # ---task7-1-b---
 library(ggplot2)
@@ -221,6 +288,11 @@ ggplot(magic_long, aes(x = Variable, y = Value, fill = Variable)) +
     plot.title = element_text(size = 10, hjust = 0.5)           # Font size and centered title
   )
 
+#comment
+#From these side-by-side boxplots, we can observe the central tendency and variability of both "length" and "weight."
+#By hiding the outliers, the visualization emphasizes the main body of the data without distraction.
+#In this dataset, "length" and "weight" exhibit distinct scales and variability, making boxplots a compact and effective tool for comparison.
+
 
 # ---task7-1-c---
 #PING:Used for presentations or as quick screenshots of analyses
@@ -232,6 +304,9 @@ ggsave("plot.pdf", width = 6, height = 4)
 #SVG:Used for web visualization, further editing, or interactive figures
 # Save as SVG
 ggsave("plot.svg", width = 6, height = 4)
+
+#comment
+#The conclusion is that choosing the right format depends on the target audience and usage.
 
 
 # ---task7-2-a---
@@ -250,6 +325,10 @@ expr_matrix <- data_raw[,-1]
 # 6. Check the dimensions of the matrix
 dim(expr_matrix)
 #[1] 553 999
+
+#comment
+# This indicates that the data contains expression measurements for 553 unique genes across 999 experimental observations. 
+#The conclusion is that the preprocessing steps successfully standardized the gene identifiers, removed missing values, and produced a structured dataset that is ready for downstream statistical analysis and visualization.
 
 
 # ---task7-b---
@@ -277,6 +356,12 @@ ggplot(gene_df_clean, aes(x = Mean_Expression, y = NA_Count)) +
        x = "Mean Expression (NA removed)",
        y = "Number of Missing Values") +
   theme_minimal()
+
+#comment
+#From this result, we learn that most genes have relatively few missing values, while a small subset of genes show a disproportionately high number of missing entries. 
+#By highlighting the top 10 genes with the most missing values, we can identify candidates that may need special attention, such as removal, 
+#imputation, or further investigation to determine whether the missingness reflects biological variability or technical artifacts.
+#This emphasizes the importance of checking missing data patterns
 
 
 # ---task7-2-c---
@@ -308,6 +393,10 @@ ggplot(na_summary, aes(x = Threshold, y = Gene_Count)) +
     axis.text.x  = element_text(size = 10),
     axis.text.y  = element_text(size = 10)
   )
+
+#From this result, we learn how missing values are distributed across genes. 
+#The conclusion is that threshold-based filtering provides a systematic way to decide which genes are reliable enough for downstream analyses. This 
+#ensures that missing data does not bias clustering, differential expression, or other results.
 
 
 # ---task7-2-d---
@@ -406,7 +495,6 @@ ggplot(CO2, aes(x = Treatment, y = uptake, fill = Treatment)) +
 #Preliminary evidence suggests that chilling may reduce CO₂ uptake on average.
 
 
-
 # ---task7-3---
 library(ggplot2)
 data(CO2)
@@ -493,7 +581,6 @@ kable(
 #Where the max >> median, a few chromosomes show markedly high counts, indicating right-skewed distributions.
 #Because the median is robust to outliers, it is a more stable summary for between-chromosome comparison.
 #Use boxplots and/or log scales to visualize spread and outliers, and flag chromosomes driving the maxima.
-
 
 
 # ---task8-1-b---
