@@ -1,4 +1,25 @@
-# --- Basic R Script to Calculate the Square Root of 10 ---
+#Group2 [Single-Cell Transcriptional Regulatory Element Atlas of Human Tissues]
+#1-a The most significant medical and technical insights derived from this study are:
+#Built a single-cell atlas of tCREs across 23 tissues (>175k annotated)
+#Introduced ICE-CREAM score to quantify trait heritability at cell-type resolution
+#Disease specificity: MI → fibroblast subtypes, smooth muscle cells  Crohn’s / UC → distinct immune and stromal cells
+#Mechanism: Height → chondrocytes, WWP2 P2 promoter, TGF-β pathway
+#Conclusion: tCREs show stronger heritability enrichment than non-transcribed regions, highlighting their role in genetic risk interpretation
+
+#1-b technologies employed
+# Single-cell 5’-RNA-seq (sc-5’-RNA-seq),  Single-cell ATAC-seq (sc-ATAC-seq), Bulk CAGE (Cap Analysis of Gene Expression), Bulk RNA-seq and Bulk ATAC-seq,
+# Promoter-capture Hi-C (pcHi-C), H3K27ac HiChIP, Hi-C (ENCODE), SCAFE (v1.0.0), ICE-CREAM score, Consensus Non-negative Matrix Factorization (cNMF),
+# Stratified LD score regression (S-LDSC),  LDSC-SEG, Cicero (v1.3.4.11), ChromVAR (v1.12.0), SEACells (v0.2.0), Cell Set Enrichment Analysis (CSEA) / fgsea
+# motifbreakR, scrublet (Wolock et al., 2019), Cellbender (Fleming et al., 2023), bbknn (Polański et al., 2020)
+
+#1-a Possible Questions and Hypotheses
+#1.	The authors should clarify whether chromatin regions that are open but not transcribed truly lack regulatory function, or if their role is simply not captured in the current assay.
+#2.	The influence of the parameter choice ($k=150$) on ICE-CREAM results requires further justification. Would alternative $k$ values substantially alter the identified disease-associated cell types or tCRE modules?
+#3.	It remains unclear how signals from internal priming—known for high sensitivity—are distinguished from genuine TSS signals of tCREs. Additional validation would strengthen the conclusions.
+
+
+
+# --- 4-1 Basic R Script to Calculate the Square Root of 10 ---
 # Step 1: Define the number
 number <- 10
 # Step 2: Calculate the square root of the number
@@ -14,7 +35,7 @@ print(sqrt_result)
 # This result confirms the mathematical fact that √10 ≈ 3.162.
 
 
-# ---R command to calculate the base-2 logarithm of 32 ---
+# --- 4-2 R command to calculate the base-2 logarithm of 32 ---
 # Step 1: Calculate the base-2 logarithm of 32
 log_result <- log(32, base = 2)
 # Step 2: Print the result
@@ -28,7 +49,7 @@ print(log_result)
 # The result demonstrates the correctness of the logarithmic-exponential relationship.
 
 
-# ---Create a sequence from 1 to 1000---
+# --- 4--3 Create a sequence from 1 to 1000---
 numbers <- 1:1000
 # Step 1: Calculate the sum
 total_sum <- sum(numbers)
@@ -42,7 +63,7 @@ total_sum
 # Sum = n(n + 1) / 2
 
 
-# Create a sequence of even numbers from 2 to 1000
+# --- 4-4 Create a sequence of even numbers from 2 to 1000 ---
 even_numbers <- seq(2, 1000, by = 2)
 # Display the first few numbers
 head(even_numbers)
@@ -59,7 +80,7 @@ sum_even
 # Therefore, the R calculation confirms the arithmetic sequence formula.
 
 
-# --- Calculate the numbur of pairwise comparisons for 100 genes ---
+# --- 4-5 Calculate the numbur of pairwise comparisons for 100 genes ---
 # Step 1: Define the number of genes
 num_genes <- 100
 # Step 2: Calculate the number of Calpairwise comparisons (n choose 2)
@@ -76,7 +97,7 @@ print(pairwise_comparisons)
 # Therefore, the R calculation confirms how combinatorics can be used to determine the number of unique pairs in a dataset.
 
 
-# --- How many ways are there to choose 3 genes at a time from 100 genes ---
+# --- 4-6 How many ways are there to choose 3 genes at a time from 100 genes ---
 # Step 1: Define the number of genes
 num_genes <- 100
 # Step 2: Calculate the number of combinations choosing 3 genes at a time
@@ -134,7 +155,7 @@ CO2 %>%
 # The conclusion is that plant type plays a crucial role in CO2 uptake efficiency.
 
 
-# ---task 6-1 ---
+# --- task 6-1 ---
 # Define a function to return mean, median, and ratio in a data frame
 mean_median_ratio_df <- function(mean_value, median_value) {
   # Calculate ratio
@@ -216,6 +237,9 @@ summarise(tmp, uptake_mean = mean(uptake), .groups = "drop")
 
 # ---task6-4---
 #I primarily use single-cell analysis in my research, so I consider lapply the most useful for my work. lapply excels at applying the same procedure to each sample, making it well suited for analyzing large numbers of samples.
+
+#comment
+#I found an apply-family function suitable for my research.
 
 
 # --- task7-1-a ---
@@ -332,6 +356,10 @@ dim(expr_matrix)
 
 
 # ---task7-b---
+
+library(ggplot2)
+library(dplyr)
+library(ggrepel)
 # Make a gene-level summary dataframe
 gene_df <- data.frame(
   Gene = rownames(expr_matrix),
@@ -356,6 +384,7 @@ ggplot(gene_df_clean, aes(x = Mean_Expression, y = NA_Count)) +
        x = "Mean Expression (NA removed)",
        y = "Number of Missing Values") +
   theme_minimal()
+write.csv(… , file = "7-2-b", row.names = FALSE)
 
 #comment
 #From this result, we learn that most genes have relatively few missing values, while a small subset of genes show a disproportionately high number of missing entries. 
@@ -393,7 +422,9 @@ ggplot(na_summary, aes(x = Threshold, y = Gene_Count)) +
     axis.text.x  = element_text(size = 10),
     axis.text.y  = element_text(size = 10)
   )
+write.csv(na_summary, file = "7-2-c.csv", row.names = FALSE)
 
+#comment
 #From this result, we learn how missing values are distributed across genes. 
 #The conclusion is that threshold-based filtering provides a systematic way to decide which genes are reliable enough for downstream analyses. This 
 #ensures that missing data does not bias clustering, differential expression, or other results.
@@ -420,6 +451,7 @@ for (i in 1:nrow(expr_matrix_imputed)) {
 # 5) Check: Are there any NAs left?
 anyNA(expr_matrix_imputed)
 #[1] FALSE
+write.csv(expr_matrix_imputed,file = "7-2-c.csv",row.names = TRUE) 
 
 #comment
 #All missing values were successfully imputed (anyNA returned FALSE).
@@ -617,7 +649,7 @@ p2 <- ggplot(chromosome, aes(x = basepairs)) +
   ) +
   theme_minimal(base_size = 12) +
   theme(
-    plot.title = element_text(size = 10, hjust = 0.5),
+    plot.title = element_text(size = 8, hjust = 0.5),
     axis.text  = element_text(size = 8),
     axis.title = element_text(size = 9),
     axis.text.x = element_text(angle = 45, hjust = 1)
